@@ -52,6 +52,7 @@
 
             // update the tips sub-text to show status.
             document.getElementById('tipz').innerHTML = '<p>Executing file: ' + file.name + '</p>';
+            document.getElementById('status').style.opacity = ".3";
 
             // event handler for when the file is done reading.
             addEventHandler(reader, 'loadend', function(e, file) {
@@ -61,15 +62,14 @@
               eval(bin); // execute the text loaded from the file
 
               document.getElementById('tipz').innerHTML = '<p>Check developer console for output</p>';
+              document.getElementById('status').style.opacity = "1";
             }.bind(reader)); // bind will attach the file to the function call as 'this'
           }
           return false;
         });
 
       });
-    } else {
-      document.getElementById('status').innerHTML = 'Your browser does not support the HTML5 FileReader.<br> Go get Google Chrome <a href="http://www.google.com/chrome/">here</a>';
-    }
+    } else document.getElementById('status').innerHTML = 'Your browser does not support the HTML5 FileReader.<br> Go get Google Chrome <a href="http://www.google.com/chrome/">here</a>';
   </script>
 
   <!-- CSS I won't really go over... google it if you're really curious
@@ -97,6 +97,13 @@
       width: 50%;
       margin-left: 25%;
       margin-right: 25%;
+      opacity: 1;
+
+      -webkit-transition: all 1s ease;
+      -moz-transition: all 1s ease;
+      -ms-transition: all 1s ease;
+      -o-transition: all 1s ease;
+      transition: all 1s ease;
     }
 
     #consoleOverlay {
