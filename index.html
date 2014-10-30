@@ -1,0 +1,136 @@
+<html>
+  <!-- SCRIPT THAT HANDLES DRAG 'N DROP -->
+  <script type="text/javascript">
+    // override console.log
+    var console_log = console.log.bind(console);
+    console.log = function(obj) {
+      console_log(obj); // call the old C++ binding func impl by browser
+      // append msg to consoleOverlay div.
+      document.getElementById('consoleOverlay').innerHTML += '<p>' + obj.toString() + '</p>';
+    }
+
+    // cross browser event handler compat.
+    function addEventHandler(obj, evt, handler) {
+      if(obj.addEventListener)
+        obj.addEventListener(evt, handler, false);
+      else if(obj.attachEvent)
+        obj.attachEvent('on'+evt, handler);
+      else
+        obj['on'+evt] = handler;
+    }
+
+    // verrify HTML 5
+    if(window.FileReader) {
+      // window load handler 
+      addEventHandler(window, 'load', function() {
+
+        // precache js references to these divs
+        var status = document.getElementById('status');
+        var drop   = document.getElementById('drop');
+
+        // disable default handling of dragover and dragenter
+        // makes it indicate you can drag and drop a file properly.
+        function cancel(e) {
+          if (e.preventDefault) { e.preventDefault(); }
+          return false;
+        }
+        addEventHandler(drop, 'dragover', cancel);
+        addEventHandler(drop, 'dragenter', cancel);
+
+        // add file drop event handler
+        addEventHandler(drop, 'drop', function (e) {
+          e = e || window.event; // browser compat.
+          if (e.preventDefault) { e.preventDefault(); }
+
+          // data transfer from the event
+          var dt    = e.dataTransfer;
+          // array of files referenced in the dataTransfer - the files you tried to drop in.
+          var files = dt.files;
+          for (var i=0; i<files.length; i++) { // loop through the files
+            var file = files[i];
+            // create a reader to read the file contents
+            var reader = new FileReader();
+            // start read as a binary string. could just as easily use regular string but w/e.
+            reader.readAsBinaryString(file);
+
+            // update the tips sub-text to show status.
+            document.getElementById('tipz').innerHTML = '<p>Executing file: ' + file.name + '</p>';
+
+            // event handler for when the file is done reading.
+            addEventHandler(reader, 'loadend', function(e, file) {
+              var bin = this.result;
+              console.clear(); // clear old console printouts
+              document.getElementById('consoleOverlay').innerHTML = ''; // clear our console overlay
+              eval(bin); // execute the text loaded from the file
+
+              document.getElementById('tipz').innerHTML = '<p>Check developer console for output</p>';
+            }.bind(reader)); // bind will attach the file to the function call as 'this'
+          }
+          return false;
+        });
+
+      });
+    } else {
+      document.getElementById('status').innerHTML = 'Your browser does not support the HTML5 FileReader.';
+    }
+  </script>
+
+  <!-- CSS I won't really go over... google it if you're really curious
+  all you need to know is it describes the look, colors, and font etc of the page -->
+  <style>
+    body {
+      font-family: Helvetica;
+      background-color: rgb(40,40,40);
+    }
+    #drop {
+      padding-top: 30%;
+      position: relative;
+      height: auto !important;
+      width: auto;
+    }
+
+    #status {
+      text-align: center;
+      color: rgb(200,200,200);
+      border-radius: 5px;
+      border-width: 2px;
+      border-color: rgb(155,155,155);
+      background-color: rgba(255,255,255,0.05);
+      border: solid;
+      width: 50%;
+      margin-left: 25%;
+      margin-right: 25%;
+    }
+
+    #consoleOverlay {
+      font-family: Consolas, Helvetica;
+
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      color: rgb(155,155,155);
+
+      pointer-events:none;
+    }
+  </style>
+
+  <body>
+    <div id="consoleOverlay">
+    </div>
+
+    <!-- the divs -->
+    <div id="drop">
+      <div id="status">
+        <h1>Drag and drop Source File here</h1>
+        <div id="tipz">
+          <p>then open the developer console to view output</p>
+          <p>tip: start out by trying test.js</p>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
