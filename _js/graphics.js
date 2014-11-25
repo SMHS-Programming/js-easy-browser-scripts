@@ -1,27 +1,33 @@
 var canvas;
 var g2d;
+
+function inherit(proto) {
+	function F() {}
+	F.prototype = proto;
+	return new F;
+}
+
 $(function() {
-	console.log('hello woorrrlllldddd');
-	$('body').append("<canvas id='we'>Didn't work</canvas>");
-	canvas = document.getElementById('we');
+	canvas = document.getElementById('myCanvas');
 	g2d = canvas.getContext('2d');
 });
 
 function getWidth() {
-	return canvas.css('width');
+	return $(canvas).css('width');
 }
 
 function getHeight() {
-	return canvas.css('height');
+	return $(canvas).css('height');
 }
 
 
 var objects = [];
 
 var drawCanvas = function drawCanvas() {
-	objects.forEach(function(obj) {
-		obj.draw();
-	})
+	g2d.clearRect(0,0,getWidth(), getHeight());
+	for(var i = 0; i < objects.length; ++i){
+		objects[i].draw();
+	}
 }
 
 
@@ -31,6 +37,7 @@ function GraphicsObj(w, h) {
 
 
 GraphicsObj.prototype.register = function register() {
+	console_log('registered object');
 	objects.push(this);
 	drawCanvas();
 }
@@ -82,11 +89,11 @@ function Rectangle(w, h) {
 	this.y = 0;
 	this.w = w;
 	this.h = h;
-	this.color '#FFF';
+	this.color = '#FFF';
 	this.register();
 }
 
-Rectangle.prototype = Object.create(GraphicsObj.prototype);
+Rectangle.prototype = inherit(GraphicsObj.prototype);
 
 Rectangle.prototype.draw = function render() {
 	g2d.fillStyle = this.color;
@@ -99,14 +106,14 @@ function Circle(r) {
 	this.x = 0;
 	this.y = 0;
 	this.r = r;
-	this.color '#FFF';
+	this.color = '#FFF';
 	this.register();
 }
 
-Circle.prototype = Object.create(GraphicsObj.prototype);
+Circle.prototype = inherit(GraphicsObj.prototype);
 Circle.prototype.draw = function draw() {
 	g2d.beginPath();
-	g2d.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+	g2d.arc(this.x, this.y, this.r, 0, 2*Math.PI);
 	g2d.fillStyle = this.color;
 	g2d.fill();
 }
@@ -120,7 +127,7 @@ var TextVisual = function(label, font) {
 	this.y = 0;
 }
 
-TextVisual.prototype = Object.create(GraphicsObj.prototype);
+TextVisual.prototype = inherit(GraphicsObj.prototype);
 TextVisual.prototype.draw = function() {
 	g2d.fillText(this.l, this.x, this.y);
 	g2d.font = this.font;
@@ -139,6 +146,7 @@ var Line = function(x1, y1, x2, y2) {
 	this.color = '#FFF';
 }
 
+Line.prototype = inherit(GraphicsObj.prototype);
 Line.prototype.draw = function draw() {
 	g2d.moveTo(this.x1, this.y1);
 	g2d.lineTo(this.x2, this.y2);

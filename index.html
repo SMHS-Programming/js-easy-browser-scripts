@@ -124,10 +124,25 @@
 
                 pointer-events:none;
             }
+
+            canvas {
+                border: white dotted 1px;
+                position: fixed;
+                right: 10px;
+                bottom: 10px;
+                z-index: 10;
+            }
+            .Rectangle {
+                position: fixed;
+            }
+            .Circle {
+                border-radius: 50%;
+            }
+            .Text {
+            }
         </style>
 
         <script type="text/javascript" src="_js/graphics.js"></script>
-        <!--<link rel="stylesheet" type="text/css" href="https://rawgit.com/yashplorer/graphics-js/master/graphics.css">-->
         
         <!--un-comment in event of offline work-->
             <!--<script type="text/javascript" src="../graphics-js/graphics.js"></script>-->
@@ -135,6 +150,7 @@
     </head>
     <body>
         <div id="consoleOverlay"></div>
+        <canvas id="myCanvas" width="400px" height="400px"></canvas>
 
         <!-- the divs -->
         <div id="drop">
@@ -146,5 +162,6 @@
                 </div>
             </div>
         </div>
+
     </body>
 </html>
